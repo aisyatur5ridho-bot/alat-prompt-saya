@@ -24,8 +24,9 @@ uploaded_file = st.file_uploader("Pilih file...", type=["jpg", "png", "jpeg", "m
 # 4. Logika Utama (Tombol ditekan)
 if st.button("🚀 Generate Prompt"):
     if uploaded_file is not None:
-        # PENTING: Kita ganti ke model EXPERIMENTAL (-exp) yang biasanya jatah gratisnya banyak!
-        model = genai.GenerativeModel('gemini-2.0-flash-exp')
+        # KEMBALI KE MODEL STANDAR (Paling Stabil & Gratis)
+        # Tadi siang error 404 karena library salah. Sekarang library benar, ini pasti jalan.
+        model = genai.GenerativeModel('gemini-1.5-flash')
         
         with st.spinner('Sedang melihat & berpikir... (Tunggu sebentar)'):
             try:
@@ -62,6 +63,7 @@ if st.button("🚀 Generate Prompt"):
                         st.code(response.text, language="markdown")
                         
             except Exception as e:
+                # Jika 1.5 Flash masih error, tampilkan pesan jelas
                 st.error(f"Terjadi kesalahan: {e}")
     else:
         st.warning("Silakan upload file dulu ya!")
