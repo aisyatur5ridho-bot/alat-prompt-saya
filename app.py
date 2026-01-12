@@ -1,15 +1,39 @@
+import streamlit as st
+import google.generativeai as genai
+from PIL import Image
+import tempfile
+
+# 1. Konfigurasi Halaman
+st.set_page_config(page_title="Video to Prompt AI", layout="centered")
+
+st.markdown("<h3 style='text-align: center;'>🎬 AI Video/Image to Prompt</h3>", unsafe_allow_html=True)
+st.write("Upload gambar atau video, AI akan membuatkan prompt detail untukmu.")
+
+# 2. Ambil API Key & Setup Gemini
+try:
+    api_key = st.secrets["GOOGLE_API_KEY"]
+    genai.configure(api_key=api_key)
+except Exception as e:
+    st.error("API Key belum disetting di Secrets!")
+    st.stop()
+
+# 3. UI Pilihan & Upload
+option = st.selectbox("Apa yang ingin kamu upload?", ("Gambar (Image)", "Video"))
+uploaded_file = st.file_uploader("Pilih file...", type=["jpg", "png", "jpeg", "mp4"])
+
+# 4. Logika Utama (Tombol ditekan)
 if st.button("🚀 Generate Prompt"):
     if uploaded_file is not None:
-        # Kita pakai model LITE yang ada di daftar akun Anda (Pasti Gratis & Jalan)
+        # PENTING: Pakai model LITE yang kuotanya aman & ada di akun Anda
         model = genai.GenerativeModel('gemini-2.0-flash-lite-preview-02-05')
         
         with st.spinner('Sedang melihat & berpikir... (Tunggu sebentar)'):
             try:
                 if option == "Gambar (Image)":
                     image = Image.open(uploaded_file)
-                    st.image(image, caption="Gambar yang diupload", width=400) # update parameter width
+                    # Menampilkan gambar dengan lebar yang pas
+                    st.image(image, caption="Gambar yang diupload", width=400)
                     
-                    # Prompt untuk analisis gambar
                     prompt = "Deskripsikan gambar ini secara sangat detail dalam bahasa Inggris sebagai prompt untuk AI Image Generator. Fokus pada gaya visual, pencahayaan, dan subjek."
                     response = model.generate_content([prompt, image])
                     
@@ -17,11 +41,14 @@ if st.button("🚀 Generate Prompt"):
                     st.code(response.text, language="markdown")
                     
                 elif option == "Video":
+                    # Trik menyimpan file video sementara
                     with tempfile.NamedTemporaryFile(delete=False, suffix='.mp4') as tmp_file:
                         tmp_file.write(uploaded_file.read())
                         video_path = tmp_file.name
 
                     st.video(video_path)
+                    
+                    # Upload ke Google Gemini
                     video_file = genai.upload_file(path=video_path)
                     
                     import time
@@ -41,3 +68,6 @@ if st.button("🚀 Generate Prompt"):
                 st.error(f"Terjadi kesalahan: {e}")
     else:
         st.warning("Silakan upload file dulu ya!")
+
+st.markdown("---")
+st.caption("Dibuat untuk Komunitas Blogger")
