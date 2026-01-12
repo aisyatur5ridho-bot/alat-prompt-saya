@@ -24,14 +24,13 @@ uploaded_file = st.file_uploader("Pilih file...", type=["jpg", "png", "jpeg", "m
 # 4. Logika Utama (Tombol ditekan)
 if st.button("🚀 Generate Prompt"):
     if uploaded_file is not None:
-        # PENTING: Pakai model LITE yang kuotanya aman & ada di akun Anda
-        model = genai.GenerativeModel('gemini-2.0-flash-lite-preview-02-05')
+        # PENTING: Kita ganti ke model EXPERIMENTAL (-exp) yang biasanya jatah gratisnya banyak!
+        model = genai.GenerativeModel('gemini-2.0-flash-exp')
         
         with st.spinner('Sedang melihat & berpikir... (Tunggu sebentar)'):
             try:
                 if option == "Gambar (Image)":
                     image = Image.open(uploaded_file)
-                    # Menampilkan gambar dengan lebar yang pas
                     st.image(image, caption="Gambar yang diupload", width=400)
                     
                     prompt = "Deskripsikan gambar ini secara sangat detail dalam bahasa Inggris sebagai prompt untuk AI Image Generator. Fokus pada gaya visual, pencahayaan, dan subjek."
@@ -41,14 +40,12 @@ if st.button("🚀 Generate Prompt"):
                     st.code(response.text, language="markdown")
                     
                 elif option == "Video":
-                    # Trik menyimpan file video sementara
                     with tempfile.NamedTemporaryFile(delete=False, suffix='.mp4') as tmp_file:
                         tmp_file.write(uploaded_file.read())
                         video_path = tmp_file.name
 
                     st.video(video_path)
                     
-                    # Upload ke Google Gemini
                     video_file = genai.upload_file(path=video_path)
                     
                     import time
