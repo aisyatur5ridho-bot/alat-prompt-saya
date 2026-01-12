@@ -23,7 +23,7 @@ uploaded_file = st.file_uploader("Pilih file...", type=["jpg", "png", "jpeg", "m
 
 if st.button("🚀 Generate Prompt"):
     if uploaded_file is not None:
-        model = genai.GenerativeModel('gemini-1.5-flash-latest')
+        model = genai.GenerativeModel('gemini-1.5-flash')
         
         with st.spinner('Sedang melihat & berpikir... (Tunggu sebentar)'):
             try:
