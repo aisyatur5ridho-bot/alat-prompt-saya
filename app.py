@@ -15,6 +15,18 @@ api_key = st.secrets["GOOGLE_API_KEY"]
 
 # Konfigurasi Gemini
 genai.configure(api_key=api_key)
+# --- TAMBAHKAN INI UNTUK CEK MODEL ---
+st.write("🔍 Sedang mengecek ketersediaan model di akun Anda...")
+try:
+    available_models = []
+    for m in genai.list_models():
+        if 'generateContent' in m.supported_generation_methods:
+            available_models.append(m.name)
+    
+    st.success(f"Model ditemukan: {available_models}")
+except Exception as e:
+    st.error(f"Gagal mengecek model: {e}")
+# -------------------------------------
 
 # Pilihan Tipe File
 option = st.selectbox("Apa yang ingin kamu upload?", ("Gambar (Image)", "Video"))
